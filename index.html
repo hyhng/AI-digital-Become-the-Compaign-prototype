@@ -42,9 +42,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 
 /* Dead zones — consistent across all screens */
 .dz-top{height:0;flex-shrink:0;position:relative;pointer-events:none;z-index:5}
-.dz-top::after{content:'↑ dead zone';position:absolute;top:88px;left:0;right:0;border-top:1px dashed rgba(255,255,255,.14);padding-left:8px;font-size:8px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.14);letter-spacing:.05em;line-height:0}
+.dz-top::after{content:'↑ dead zone';position:absolute;top:44px;left:50%;transform:translateX(-50%);border-top:none;font-size:8px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.18);letter-spacing:.05em;white-space:nowrap}
+.dz-top::before{content:'';position:absolute;top:88px;left:0;right:0;border-top:1px dashed rgba(255,255,255,.14)}
 .dz-bot{height:0;flex-shrink:0;position:relative;pointer-events:none;z-index:5}
-.dz-bot::before{content:'↓ dead zone';position:absolute;bottom:177px;left:0;right:0;border-bottom:1px dashed rgba(255,255,255,.14);padding-left:8px;font-size:8px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.14);letter-spacing:.05em;line-height:0}
+.dz-bot::before{content:'';position:absolute;bottom:177px;left:0;right:0;border-bottom:1px dashed rgba(255,255,255,.14)}
+.dz-bot::after{content:'↓ dead zone';position:absolute;bottom:88px;left:50%;transform:translateX(-50%);font-size:8px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.18);letter-spacing:.05em;white-space:nowrap}
 .dz-label{display:none}
 
 /* Comfort zone wrapper */
