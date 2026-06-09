@@ -1186,8 +1186,11 @@
       color: var(--text2);
       cursor: pointer;
       transition: all .15s;
-      pointer-events: all;
       white-space: nowrap
+    }
+    
+    .screen.active .ftb:not(.hidden) .ftb-btn {
+      pointer-events: auto;
     }
 
     .ftb-btn:hover {
@@ -2727,6 +2730,7 @@
     }
 
     goTo('idle')
+    switchView('hifi')
 
     // ── Wireflow ──────────────────────────────────────────────
     const NODES = [
