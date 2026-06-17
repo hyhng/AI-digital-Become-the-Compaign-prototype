@@ -1875,6 +1875,41 @@
       color: #AEF33E;
       background: rgba(174, 243, 62, 0.1);
     }
+
+    /* Reprompt modal tab toggle */
+    .reprompt-tab-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 12px
+    }
+
+    .reprompt-tab {
+      flex: 1;
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      padding: 7px;
+      background: transparent;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      transition: all .15s
+    }
+
+    .reprompt-tab:hover {
+      color: var(--text2)
+    }
+
+    .reprompt-tab.active {
+      background: var(--surface2);
+      color: var(--text)
+    }
+
+    body.theme-hifi .reprompt-tab.active {
+      background: rgba(174, 243, 62, 0.1);
+      color: #AEF33E
+    }
   </style>
 </head>
 
@@ -2224,7 +2259,7 @@
             </div>
             <!-- Floating toolbar (grid level) -->
             <div class="ftb" id="ftb">
-              <button class="ftb-btn" onclick="openModal()">Variation</button>
+              <button class="ftb-btn" onclick="openGlobalReprompt()">Reprompt</button>
               <button class="ftb-btn p" onclick="goTo('qr')">Download all</button>
             </div>
             <div class="dz-bot"><span class="dz-label">↓ dead zone</span></div>
@@ -2294,35 +2329,74 @@
               </div>
             </div>
 
-            <!-- Variation modal (grid-level — change whole campaign scenario) -->
+            <!-- Reprompt modal (grid-level) — Direction tab or Mood tab -->
             <div class="modal-overlay" id="modal" onclick="handleModalBg(event)">
               <div class="modal-sheet" onclick="event.stopPropagation()">
                 <div class="modal-handle"></div>
-                <div class="modal-title">CHANGE CAMPAIGN DIRECTION</div>
-                <div class="modal-grid">
-                  <div class="modal-card" onclick="selModal(this)">
-                    <div class="modal-card-bg" style="background:#C4A35A"></div>
-                    <div class="modal-card-name">Luxury Auto</div>
-                  </div>
-                  <div class="modal-card" onclick="selModal(this)">
-                    <div class="modal-card-bg" style="background:#E05A3A"></div>
-                    <div class="modal-card-name">Sport & Performance</div>
-                  </div>
-                  <div class="modal-card" onclick="selModal(this)">
-                    <div class="modal-card-bg" style="background:#5A7AE0"></div>
-                    <div class="modal-card-name">Future Tech</div>
-                  </div>
-                  <div class="modal-card" onclick="selModal(this)">
-                    <div class="modal-card-bg" style="background:#A05AE0"></div>
-                    <div class="modal-card-name">Urban Fashion</div>
-                  </div>
+                <!-- Tab toggle -->
+                <div class="reprompt-tab-toggle">
+                  <button class="reprompt-tab active" id="tab-direction" onclick="switchRepromptTab('direction')">Direction</button>
+                  <button class="reprompt-tab" id="tab-mood" onclick="switchRepromptTab('mood')">Mood</button>
                 </div>
-                <div
-                  style="font-size:9px;color:var(--text3);text-align:center;margin-bottom:8px;font-family:'DM Mono',monospace">
-                  Regenerates all outputs</div>
-                <div class="wfb p" id="modal-gen-btn" onclick="generateVariation()"
-                  style="opacity:.4;pointer-events:none">Generate variation →</div>
-                <div class="wfb" onclick="closeModal()" style="margin-top:6px;font-size:9px;color:var(--text3)">Cancel
+                <!-- Direction tab -->
+                <div id="tab-content-direction">
+                  <div class="modal-title">CHANGE CAMPAIGN DIRECTION</div>
+                  <div class="modal-grid">
+                    <div class="modal-card" onclick="selModal(this)">
+                      <div class="modal-card-bg" style="background:#C4A35A"></div>
+                      <div class="modal-card-name">Luxury Auto</div>
+                    </div>
+                    <div class="modal-card" onclick="selModal(this)">
+                      <div class="modal-card-bg" style="background:#E05A3A"></div>
+                      <div class="modal-card-name">Sport & Performance</div>
+                    </div>
+                    <div class="modal-card" onclick="selModal(this)">
+                      <div class="modal-card-bg" style="background:#5A7AE0"></div>
+                      <div class="modal-card-name">Future Tech</div>
+                    </div>
+                    <div class="modal-card" onclick="selModal(this)">
+                      <div class="modal-card-bg" style="background:#A05AE0"></div>
+                      <div class="modal-card-name">Urban Fashion</div>
+                    </div>
+                  </div>
+                  <div style="font-size:9px;color:var(--text3);text-align:center;margin-bottom:8px;font-family:'DM Mono',monospace">Regenerates all outputs</div>
+                  <div class="wfb p" id="modal-gen-btn" onclick="generateVariation()" style="opacity:.4;pointer-events:none">Generate variation →</div>
+                  <div class="wfb" onclick="closeModal()" style="margin-top:6px;font-size:9px;color:var(--text3)">Cancel</div>
+                </div>
+                <!-- Mood tab -->
+                <div id="tab-content-mood" style="display:none">
+                  <div class="modal-title">MOOD REPROMPT — ALL OUTPUTS</div>
+                  <div class="reprompt-rows" id="global-reprompt-rows">
+                    <div class="reprompt-row">
+                      <span>Mood</span>
+                      <div class="reprompt-options">
+                        <div class="ropt" onclick="selGlobalReprompt(this,'mood')">Cinematic</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'mood')">Energetic</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'mood')">Minimal</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'mood')">Dramatic</div>
+                      </div>
+                    </div>
+                    <div class="reprompt-row">
+                      <span>Environment</span>
+                      <div class="reprompt-options">
+                        <div class="ropt" onclick="selGlobalReprompt(this,'env')">Urban night</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'env')">Studio</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'env')">Outdoor</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'env')">Abstract</div>
+                      </div>
+                    </div>
+                    <div class="reprompt-row">
+                      <span>Style</span>
+                      <div class="reprompt-options">
+                        <div class="ropt" onclick="selGlobalReprompt(this,'style')">Bold</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'style')">Clean</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'style')">Gritty</div>
+                        <div class="ropt" onclick="selGlobalReprompt(this,'style')">Luxury</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="wfb p" id="global-mood-gen-btn" onclick="generateGlobalMood()" style="opacity:.4;pointer-events:none;margin-top:10px">Apply to all outputs →</div>
+                  <div class="wfb" onclick="closeModal()" style="margin-top:6px;font-size:9px;color:var(--text3)">Cancel</div>
                 </div>
               </div>
             </div>
@@ -2495,6 +2569,8 @@
     function initResult() {
       carouselTimers.forEach(t => clearTimeout(t)); carouselTimers = []
       currentCardIndex = 0; currentOffset = 0
+      Object.values(cardRegenMap).forEach(s => { if (s && s.timer) clearTimeout(s.timer) })
+      cardRegenMap = {}; cardHasOldVersion = {}
       closeDetail()
       buildGrid(); buildCarousel(); initToolbar()
     }
@@ -2535,16 +2611,8 @@
     function openDetail(i) {
       currentCardIndex = i
       document.getElementById('detail-overlay').classList.add('open')
-      // hide floating toolbar while in detail
       document.getElementById('ftb').classList.add('hidden')
-      // Reset version bar — only show after first reprompt
-      hasOldVersion = false
-      document.getElementById('version-bar').style.display = 'none'
-      // Reset reprompt button state
-      const btn = document.getElementById('reprompt-btn')
-      btn.textContent = 'Reprompt'; btn.classList.remove('stopping')
-      if (isRegenerating) { stopRegeneration() }
-      // wait for layout then snap
+      // wait for layout then snap — snapToCard will update button + version bar
       setTimeout(() => { updateCardWidth(); currentOffset = 0; snapToCard(i) }, 30)
     }
     function closeDetail() {
@@ -2585,6 +2653,12 @@
       t.style.transition = 'transform .35s cubic-bezier(.25,.46,.45,.94)'; t.style.transform = `translateX(${currentOffset}px)`
       document.querySelectorAll('.c-dot').forEach((d, i) => { d.classList.remove('active', 'done-dot'); if (i === idx) d.classList.add('active'); else d.classList.add('done-dot') })
       currentCardIndex = idx
+      updateRepromptBtn(idx)
+      const vBar = document.getElementById('version-bar')
+      if (vBar) {
+        if (cardHasOldVersion[idx]) { vBar.style.display = 'flex'; showVersion('current') }
+        else vBar.style.display = 'none'
+      }
     }
     function getVisibleCards() { return Array.from(document.querySelectorAll('#carousel-track .c-card')).filter(c => c.style.display !== 'none') }
 
@@ -2601,104 +2675,107 @@
       goTo('loading')
     }
 
+    function openGlobalReprompt() {
+      switchRepromptTab('direction')
+      openModal()
+    }
+    function switchRepromptTab(tab) {
+      document.getElementById('tab-direction').classList.toggle('active', tab === 'direction')
+      document.getElementById('tab-mood').classList.toggle('active', tab === 'mood')
+      document.getElementById('tab-content-direction').style.display = tab === 'direction' ? '' : 'none'
+      document.getElementById('tab-content-mood').style.display = tab === 'mood' ? '' : 'none'
+    }
+    function selGlobalReprompt(el, cat) {
+      const row = el.closest('.reprompt-row')
+      row.querySelectorAll('.ropt').forEach(r => r.classList.remove('selected'))
+      el.classList.add('selected')
+      const btn = document.getElementById('global-mood-gen-btn')
+      btn.style.opacity = '1'; btn.style.pointerEvents = 'all'
+    }
+    function generateGlobalMood() {
+      closeModal()
+      document.querySelectorAll('#global-reprompt-rows .ropt').forEach(r => r.classList.remove('selected'))
+      const btn = document.getElementById('global-mood-gen-btn')
+      btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'
+      goTo('loading')
+    }
+
     // ── Reprompt flow ──
-    let isRegenerating = false
-    let regenTimer = null
-    let hasOldVersion = false
+    // Per-card state: cardRegenMap[idx] = { timer } when regenerating, undefined otherwise
+    let cardRegenMap = {}
+    let cardHasOldVersion = {}
 
     function openReprompt() { document.getElementById('reprompt').classList.add('open') }
     function closeReprompt() {
       document.getElementById('reprompt').classList.remove('open')
-      // Clear selected pills when closing
-      document.querySelectorAll('.ropt').forEach(r => r.classList.remove('selected'))
+      document.querySelectorAll('#reprompt .ropt').forEach(r => r.classList.remove('selected'))
     }
     function handleRepromptBg(e) { if (e.target === document.getElementById('reprompt')) closeReprompt() }
 
     function handleRepromptBtn() {
-      if (isRegenerating) {
-        // Stop generation
-        stopRegeneration()
+      if (cardRegenMap[currentCardIndex]) {
+        stopRegeneration(currentCardIndex)
       } else {
-        // Open reprompt bottom sheet
         openReprompt()
       }
     }
 
     function selectReprompt(el, category, value) {
-      // Highlight selected pill
       const row = el.closest('.reprompt-row')
       row.querySelectorAll('.ropt').forEach(r => r.classList.remove('selected'))
       el.classList.add('selected')
-
-      // Auto-close bottom sheet after short delay
       setTimeout(() => {
         closeReprompt()
-        // Start regeneration on current carousel card
-        startRegeneration()
+        startRegeneration(currentCardIndex)
       }, 250)
     }
 
-    function startRegeneration() {
-      isRegenerating = true
+    function updateRepromptBtn(idx) {
       const btn = document.getElementById('reprompt-btn')
-      btn.textContent = '■ Stop'
-      btn.classList.add('stopping')
-
-      // Put current carousel card into regenerating state (shimmer)
-      const cards = document.querySelectorAll('#carousel-track .c-card')
-      const currentCard = cards[currentCardIndex]
-      if (currentCard) {
-        currentCard.classList.remove('done')
-        currentCard.classList.add('regenerating')
-      }
-
-      // Simulate regeneration (3-5 seconds)
-      const regenTime = 3000 + Math.random() * 2000
-      regenTimer = setTimeout(() => {
-        finishRegeneration()
-      }, regenTime)
-    }
-
-    function stopRegeneration() {
-      if (regenTimer) { clearTimeout(regenTimer); regenTimer = null }
-      isRegenerating = false
-      const btn = document.getElementById('reprompt-btn')
-      btn.textContent = 'Reprompt'
-      btn.classList.remove('stopping')
-
-      // Restore card to done state (keep old version)
-      const cards = document.querySelectorAll('#carousel-track .c-card')
-      const currentCard = cards[currentCardIndex]
-      if (currentCard) {
-        currentCard.classList.remove('regenerating')
-        currentCard.classList.add('done')
+      if (!btn) return
+      if (cardRegenMap[idx]) {
+        btn.textContent = '■ Stop'
+        btn.classList.add('stopping')
+      } else {
+        btn.textContent = 'Reprompt'
+        btn.classList.remove('stopping')
       }
     }
 
-    function finishRegeneration() {
-      isRegenerating = false
-      regenTimer = null
-      const btn = document.getElementById('reprompt-btn')
-      btn.textContent = 'Reprompt'
-      btn.classList.remove('stopping')
-
-      // Card finishes: remove regenerating, add done
+    function startRegeneration(idx) {
       const cards = document.querySelectorAll('#carousel-track .c-card')
-      const currentCard = cards[currentCardIndex]
-      if (currentCard) {
-        currentCard.classList.remove('regenerating')
-        currentCard.classList.add('done')
-        // Visual change: slightly different border to indicate it's a new version
-        currentCard.style.borderColor = '#555'
-        setTimeout(() => { currentCard.style.borderColor = '' }, 1500)
-      }
+      const card = cards[idx]
+      if (card) { card.classList.remove('done'); card.classList.add('regenerating') }
+      const timer = setTimeout(() => { finishRegeneration(idx) }, 3000 + Math.random() * 2000)
+      cardRegenMap[idx] = { timer }
+      if (idx === currentCardIndex) updateRepromptBtn(idx)
+    }
 
-      // Show version bar (current / previous)
-      hasOldVersion = true
-      const vBar = document.getElementById('version-bar')
-      vBar.style.display = 'flex'
-      // Reset to current
-      showVersion('current')
+    function stopRegeneration(idx) {
+      const state = cardRegenMap[idx]
+      if (state) { clearTimeout(state.timer) }
+      delete cardRegenMap[idx]
+      const cards = document.querySelectorAll('#carousel-track .c-card')
+      const card = cards[idx]
+      if (card) { card.classList.remove('regenerating'); card.classList.add('done') }
+      if (idx === currentCardIndex) updateRepromptBtn(idx)
+    }
+
+    function finishRegeneration(idx) {
+      delete cardRegenMap[idx]
+      const cards = document.querySelectorAll('#carousel-track .c-card')
+      const card = cards[idx]
+      if (card) {
+        card.classList.remove('regenerating'); card.classList.add('done')
+        card.style.borderColor = '#555'
+        setTimeout(() => { card.style.borderColor = '' }, 1500)
+      }
+      cardHasOldVersion[idx] = true
+      if (idx === currentCardIndex) {
+        updateRepromptBtn(idx)
+        document.getElementById('version-bar').style.display = 'flex'
+        showVersion('current')
+      }
     }
 
     function showVersion(which) {
